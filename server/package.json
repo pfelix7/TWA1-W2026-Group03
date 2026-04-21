@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "seed:airbnb": "node scripts/import-airbnb-dataset.js",
+    "seed:airbnb:reset": "node scripts/import-airbnb-dataset.js --reset"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
