@@ -13,7 +13,7 @@ const Review = require("../models/Review");
 
 function parseArgs(argv) {
   const args = {
-    file: path.resolve(__dirname, "../data/airbnb-listings.json"),
+    file: path.resolve(__dirname, "../data/airbnb.listingAndReviews.json"),
     reset: false,
   };
 
