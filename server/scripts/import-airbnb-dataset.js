@@ -7,7 +7,6 @@ const envPath = path.resolve(__dirname, "../.env");
 require("dotenv").config({ path: envPath });
 
 const connectDB = require("../config/db");
-const User = require("../models/User");
 const Listing = require("../models/Listing");
 const Review = require("../models/Review");
 
@@ -70,25 +69,7 @@ function parseReviewDate(value) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function makeSyntheticEmail(prefix, externalId) {
-  return `${prefix}_${externalId}@seed.local`;
-}
 
-function splitName(fullName) {
-  if (!fullName || typeof fullName !== "string") {
-    return { firstName: "Guest", lastName: "User" };
-  }
-
-  const clean = fullName.trim().replace(/\s+/g, " ");
-  if (!clean) {
-    return { firstName: "Guest", lastName: "User" };
-  }
-
-  const parts = clean.split(" ");
-  const firstName = parts.shift() || "Guest";
-  const lastName = parts.join(" ") || "User";
-  return { firstName, lastName };
-}
 
 function normalizeListing(raw) {
   return {
@@ -164,43 +145,7 @@ function reviewExternalId(listingId, rawReview, reviewIndex) {
   return crypto.createHash("sha1").update(hashInput).digest("hex");
 }
 
-async function upsertUsersByExternalId(userRecords) {
-  if (!userRecords.length) {
-    return;
-  }
 
-  const ops = userRecords.map((entry) => ({
-    updateOne: {
-      filter: { externalUserId: entry.externalUserId },
-      update: {
-        $setOnInsert: {
-          firstName: entry.firstName,
-          lastName: entry.lastName,
-          email: entry.email,
-          passwordHash: "seeded_external_account",
-          role: "student",
-          externalUserId: entry.externalUserId,
-        },
-      },
-      upsert: true,
-    },
-  }));
-
-  await User.bulkWrite(ops, { ordered: false });
-}
-
-async function buildUserMap(externalIds) {
-  if (!externalIds.length) {
-    return new Map();
-  }
-
-  const users = await User.find(
-    { externalUserId: { $in: externalIds } },
-    { _id: 1, externalUserId: 1 }
-  ).lean();
-
-  return new Map(users.map((u) => [u.externalUserId, u._id]));
-}
 
 async function importDataset({ file, reset }) {
   const rawText = fs.readFileSync(file, "utf8");
@@ -213,51 +158,9 @@ async function importDataset({ file, reset }) {
   if (reset) {
     await Listing.deleteMany({});
     await Review.deleteMany({ source: "dataset" });
-    await User.deleteMany({ email: /@seed\.local$/i });
   }
 
-  const hostIds = new Set();
-  const reviewerSeedEntries = [];
-
-  for (const listing of sourceData) {
-    if (listing?.host?.host_id) {
-      hostIds.add(String(listing.host.host_id));
-    }
-
-    if (Array.isArray(listing?.reviews)) {
-      for (const review of listing.reviews) {
-        if (!review?.reviewer_id) {
-          continue;
-        }
-
-        const reviewerId = String(review.reviewer_id);
-        const parts = splitName(review.reviewer_name || "Guest User");
-        reviewerSeedEntries.push({
-          externalUserId: reviewerId,
-          firstName: parts.firstName,
-          lastName: parts.lastName,
-          email: makeSyntheticEmail("reviewer", reviewerId),
-        });
-      }
-    }
-  }
-
-  const hostSeedEntries = [...hostIds].map((hostId) => ({
-    externalUserId: hostId,
-    firstName: "Host",
-    lastName: hostId,
-    email: makeSyntheticEmail("host", hostId),
-  }));
-
-  const allUserEntriesMap = new Map();
-  for (const userEntry of [...hostSeedEntries, ...reviewerSeedEntries]) {
-    if (!allUserEntriesMap.has(userEntry.externalUserId)) {
-      allUserEntriesMap.set(userEntry.externalUserId, userEntry);
-    }
-  }
-
-  await upsertUsersByExternalId([...allUserEntriesMap.values()]);
-
+  // Import listings
   const listingOps = sourceData.map((raw) => {
     const listingDoc = normalizeListing(raw);
 
@@ -274,8 +177,7 @@ async function importDataset({ file, reset }) {
     await Listing.bulkWrite(listingOps, { ordered: false });
   }
 
-  const userIdMap = await buildUserMap([...allUserEntriesMap.keys()]);
-
+  // Import reviews (without linking to users - user field stays null)
   const reviewOps = [];
   for (const listing of sourceData) {
     if (!Array.isArray(listing?.reviews)) {
@@ -291,7 +193,6 @@ async function importDataset({ file, reset }) {
         continue;
       }
 
-      const reviewerId = rawReview.reviewer_id ? String(rawReview.reviewer_id) : null;
       const extReviewId = reviewExternalId(listingId, rawReview, i);
 
       reviewOps.push({
@@ -302,9 +203,9 @@ async function importDataset({ file, reset }) {
               source: "dataset",
               externalReviewId: extReviewId,
               listingId,
-              reviewerId,
+              reviewerId: rawReview.reviewer_id ? String(rawReview.reviewer_id) : null,
               reviewerName: rawReview.reviewer_name || null,
-              user: reviewerId ? userIdMap.get(reviewerId) || null : null,
+              user: null, // No user link for dataset reviews
               comment,
               reviewDate: parseReviewDate(rawReview.date),
               rating: null,
@@ -323,7 +224,6 @@ async function importDataset({ file, reset }) {
 
   return {
     listings: sourceData.length,
-    users: allUserEntriesMap.size,
     reviews: reviewOps.length,
   };
 }
@@ -345,7 +245,6 @@ async function main() {
     const result = await importDataset(args);
     console.log("Import complete:");
     console.log(`- Listings upserted: ${result.listings}`);
-    console.log(`- Seed users upserted: ${result.users}`);
     console.log(`- Reviews upserted: ${result.reviews}`);
   } finally {
     await mongoose.disconnect();

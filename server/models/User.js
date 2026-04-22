@@ -21,12 +21,12 @@ const userSchema = new mongoose.Schema(
     },
     passwordHash: {
       type: String,
-      required: true,
+      required: false,
     },
     role: {
       type: String,
-      enum: ["student", "admin"],
-      default: "student",
+      enum: ["guest","host", "admin"],
+      default: "guest",
     },
     externalUserId: {
       type: String,
