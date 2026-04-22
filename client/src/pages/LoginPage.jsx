@@ -47,7 +47,9 @@ export default function LoginPage({ onLogin, authError, isSubmitting }) {
       </form>
 
       <hr />
-      {/* <p><strong>Demo user:</strong> alice@studentportal.test / Pass123!</p> */}
+      <p>
+        Already have an account? <Link to="/login">Log in here</Link>
+      </p>
     </Card>
   );
 }
