@@ -47,7 +47,7 @@ export default function RegisterPage({ onRegister, authError, isSubmitting }) {
   return (
     <Card>
       <h2>Create Account</h2>
-      <p>Register to start submitting reviews.</p>
+      <p>Register to start browsing listings and submitting reviews.</p>
 
       <form
         onSubmit={handleSubmit}
