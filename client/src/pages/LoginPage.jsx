@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Card from "../components/Card.jsx";
 
 export default function LoginPage({ onLogin, authError, isSubmitting }) {
@@ -23,7 +24,10 @@ export default function LoginPage({ onLogin, authError, isSubmitting }) {
       <h2>Login</h2>
       <p>Please log in to access your portal.</p>
 
-      <form onSubmit={handleSubmit} style={{ display: "grid", gap: "12px", maxWidth: "360px" }}>
+      <form
+        onSubmit={handleSubmit}
+        style={{ display: "grid", gap: "12px", maxWidth: "360px" }}
+      >
         <input
           type="email"
           placeholder="Email"
@@ -48,7 +52,7 @@ export default function LoginPage({ onLogin, authError, isSubmitting }) {
 
       <hr />
       <p>
-        Already have an account? <Link to="/login">Log in here</Link>
+        Don't have an account? <Link to="/register">Register here</Link>
       </p>
     </Card>
   );

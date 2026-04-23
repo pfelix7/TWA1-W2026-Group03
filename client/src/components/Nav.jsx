@@ -4,7 +4,7 @@ export default function Nav({ user, onLogout }) {
   return (
     <nav style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
       {!user ? (
-        <Link to="/login">Login</Link>
+        <Link to="/login"></Link> // Not ready to implement yet
       ) : (
         <>
           <Link to="/">Dashboard</Link>
