@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import ReviewsList from "./ReviewsList";
-import ReviewForm from "./ReviewForm";
+import ReviewsList from "../components/ReviewsList";
+import ReviewForm from "../components/ReviewForm";
 
 export default function ListingDetailPage({ user }) {
   const { id } = useParams();
@@ -46,21 +46,27 @@ export default function ListingDetailPage({ user }) {
   return (
     <div>
       <h1>{listing.name}</h1>
-      
+
       <img src={listing.images?.picture_url} alt={listing.name} />
-      
-      <p>{listing.address?.street}, {listing.address?.suburb}</p>
+
+      <p>
+        {listing.address?.street}, {listing.address?.suburb}
+      </p>
       <p>${parseFloat(listing.price)}/night</p>
-      
+
       <p>Accommodates: {listing.accommodates}</p>
       <p>Bedrooms: {listing.bedrooms}</p>
       <p>Bathrooms: {listing.bathrooms}</p>
-      
+
       <p>{listing.summary}</p>
-      
+
       <div>
         <h2>Reviews</h2>
-        <ReviewsList reviews={reviews} />
+        <ReviewsList
+          reviews={reviews}
+          user={user}
+          onReviewDeleted={fetchReviews}
+        />
         {user && <ReviewForm listingId={id} onReviewAdded={fetchReviews} />}
       </div>
     </div>
