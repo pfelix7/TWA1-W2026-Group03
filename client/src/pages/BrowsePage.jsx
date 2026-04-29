@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import ListingCard from "./ListingCard";
+import ListingCard from "../components/ListingCard";
 
 export default function BrowsePage() {
   const [listings, setListings] = useState([]);

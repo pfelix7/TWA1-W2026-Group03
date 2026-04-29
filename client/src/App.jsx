@@ -7,6 +7,9 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 
+import BrowsePage from "./pages/BrowsePage.jsx";
+import ListingDetailPage from "./pages/ListingDetailPage.jsx";
+
 const API_BASE = "http://localhost:3000/api";
 
 function App() {
@@ -161,6 +164,24 @@ function App() {
                 <h1>Welcome to Airbnb Explorer</h1>
                 <p>Browse listings and share your reviews.</p>
               </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/browse"
+          element={
+            <ProtectedRoute user={user}>
+              <BrowsePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/listings/:id"
+          element={
+            <ProtectedRoute user={user}>
+              <ListingDetailPage user={user} />
             </ProtectedRoute>
           }
         />

@@ -4,11 +4,13 @@ export default function Nav({ user, onLogout }) {
   return (
     <nav style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
       {!user ? (
-        <Link to="/login"></Link> // Not ready to implement yet
+        <>
+          <Link to="/login">Login</Link>
+          <Link to="/register">Register</Link>
+        </>
       ) : (
         <>
-          <Link to="/">Dashboard</Link>
-          <Link to="/">Listings</Link>
+          <Link to="/browse">Listings</Link>
           <Link to="/">Reviews</Link>
           <Link to="/">Profile</Link>
           <button onClick={onLogout}>Logout</button>
