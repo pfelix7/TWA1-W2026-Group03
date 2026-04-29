@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-// import ReviewsList from "./ReviewsList";
-// import ReviewForm from "./ReviewForm";
+import ReviewsList from "./ReviewsList";
+import ReviewForm from "./ReviewForm";
 
 export default function ListingDetailPage({ user }) {
   const { id } = useParams();
