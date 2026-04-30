@@ -6,6 +6,14 @@ export default function ReviewsList({ reviews, user, onReviewDeleted }) {
   const [editingComment, setEditingComment] = useState("");
   const [editError, setEditError] = useState("");
 
+  const isReviewAuthor = (review) => {
+    if (!user) return false;
+    if (!review.user) return false;
+
+    const reviewUserId = review.user._id || review.user;
+    return String(user.id) === String(reviewUserId);
+  };
+
   const handleEdit = (review) => {
     setEditingId(review._id);
     setEditingRating(review.rating);
@@ -98,7 +106,7 @@ export default function ReviewsList({ reviews, user, onReviewDeleted }) {
                   {review.user?.firstName} {review.user?.lastName}
                 </strong>
                 <span> • {review.rating} stars</span>
-                {user && user.id === review.user?._id && (
+                {isReviewAuthor(review) && (
                   <>
                     <button onClick={() => handleEdit(review)}>Edit</button>
                     <button onClick={() => handleDelete(review._id)}>
