@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import ReviewForm from "../components/ReviewForm";
+import ReviewsList from "../components/ReviewsList";
 
 export default function ListingDetailPage({ user }) {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -19,6 +22,7 @@ export default function ListingDetailPage({ user }) {
 
   useEffect(() => {
     fetchListing();
+    fetchReviews();
   }, [id]);
 
   const fetchListing = async () => {
@@ -31,6 +35,17 @@ export default function ListingDetailPage({ user }) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await fetch(`/api/reviews/${id}`);
+      if (!response.ok) throw new Error("Failed to fetch reviews");
+      const data = await response.json();
+      setReviews(data);
+    } catch (err) {
+      console.error("Error fetching reviews:", err);
     }
   };
 
@@ -55,6 +70,12 @@ export default function ListingDetailPage({ user }) {
       <p>Bathrooms: {getNumericValue(listing.bathrooms) ?? "N/A"}</p>
 
       <p>{listing.summary}</p>
+
+      <div style={{ marginTop: "30px" }}>
+        <h2>Reviews</h2>
+        <ReviewsList reviews={reviews} user={user} onReviewDeleted={fetchReviews} />
+        {user && <ReviewForm listingId={id} onReviewAdded={fetchReviews} user={user} reviews={reviews} />}
+      </div>
     </div>
   );
 }

@@ -14,6 +14,10 @@ export default function ReviewsList({ reviews, user, onReviewDeleted }) {
   };
 
   const handleSaveEdit = async (reviewId) => {
+    if (!editingComment.trim()) {
+      setEditError("Comment cannot be empty");
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`/api/reviews/${reviewId}`, {
@@ -30,6 +34,7 @@ export default function ReviewsList({ reviews, user, onReviewDeleted }) {
 
       if (!response.ok) throw new Error("Failed to update review");
       setEditingId(null);
+      setEditError("");
       onReviewDeleted();
     } catch (err) {
       setEditError(err.message);

@@ -1,0 +1,100 @@
+const express = require('express');
+const router = express.Router();
+const Review = require('../models/Review');
+const authMiddleware = require('../middleware/auth');
+
+// GET /api/reviews/:listingId - Get all reviews for a listing
+router.get('/:listingId', async (req, res) => {
+    try {
+        const reviews = await Review.find({ listingId: req.params.listingId })
+            .populate('user', '_id firstName lastName')
+            .sort({ createdAt: -1 });
+        res.json(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        res.status(500).json({ error: 'Failed to fetch reviews' });
+    }
+});
+
+// POST /api/reviews - Create a new review
+router.post('/',authMiddleware, async (req, res) => {
+    try {
+        const { listingId, rating, comment } = req.body;
+        const userId = req.user._id;
+
+        // Server-side validation
+        if (!listingId || !rating || !comment) {
+            return res.status(400).json({ error: 'listingId, rating, and comment are required' });
+        }
+        if (rating < 1 || rating > 5 || !Number.isInteger(rating)) {
+            return res.status(400).json({ error: 'Rating must be an integer between 1 and 5' });
+        }
+
+        // Check if user already has a review for this listing
+        const existingReview = await Review.findOne({ listingId, user: userId });
+        if (existingReview) {
+            return res.status(409).json({ error: 'You have already reviewed this listing' });
+        }
+
+        const newReview = new Review({
+            listingId,
+            user: userId,
+            rating,
+            comment,
+            source: "app",
+        });
+        await newReview.save();
+        res.status(201).json(newReview);
+    } catch (error) {
+        console.error('Error creating review:', error);
+        res.status(500).json({ error: 'Failed to create review' });
+    }
+});
+
+// PUT /api/reviews/:id - Update a review
+router.put('/:id', authMiddleware, async (req, res) => {
+    try {
+        const review = await Review.findById(req.params.id);
+        if (!review) {
+            return res.status(404).json({ error: 'Review not found' });
+        }
+        if (review.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+        const { rating, comment } = req.body;
+        if (rating) {
+            if (rating < 1 || rating > 5 || !Number.isInteger(rating)) {
+                return res.status(400).json({ error: 'Rating must be an integer between 1 and 5' });
+            }
+            review.rating = rating;
+        }
+        if (comment !== undefined && comment.trim() !== '') {
+            review.comment = comment.trim();
+        }
+        await review.save();
+        res.json(review);
+    } catch (error) {
+        console.error('Error updating review:', error);
+        res.status(500).json({ error: 'Failed to update review' });
+    }
+});
+
+// DELETE /api/reviews/:id - Delete a review
+router.delete('/:id', authMiddleware, async (req, res) => {
+    try {
+        const review = await Review.findById(req.params.id);
+        if (!review) {
+            return res.status(404).json({ error: 'Review not found' });
+        }
+        if (review.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+        await review.deleteOne();
+        res.json({ message: 'Review deleted' });
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        res.status(500).json({ error: 'Failed to delete review' });
+    }
+});
+
+module.exports = router;
