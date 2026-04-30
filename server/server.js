@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const authRouter = require("./routes/auth");
+const listingsRouter = require("./routes/listings");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +16,8 @@ async function startServer() {
     await connectDB();
 
     app.use("/api/auth", authRouter);
-
+    app.use("/api/listings", listingsRouter);
+    
     app.use((req, res) => {
         res.status(404).json({ error: "Route not found"});
     });

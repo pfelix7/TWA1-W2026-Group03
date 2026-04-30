@@ -96,6 +96,7 @@ function normalizeListing(raw) {
     bathrooms: toDecimalInput(raw.bathrooms),
     amenities: Array.isArray(raw.amenities) ? raw.amenities : [],
     price: toDecimalInput(raw.price) || "0",
+    pricePerNight: toNumber(raw.price) || 0,
     weekly_price: toDecimalInput(raw.weekly_price),
     monthly_price: toDecimalInput(raw.monthly_price),
     cleaning_fee: toDecimalInput(raw.cleaning_fee),
@@ -125,6 +126,8 @@ function normalizeListing(raw) {
         is_location_exact: Boolean(raw.address?.location?.is_location_exact),
       },
     },
+    city: raw.address?.market || raw.address?.suburb || "",
+    capacity: toNumber(raw.accommodates) || 1,
   };
 }
 
