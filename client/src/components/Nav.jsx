@@ -11,8 +11,8 @@ export default function Nav({ user, onLogout }) {
       ) : (
         <>
           <Link to="/browse">Listings</Link>
-          <Link to="/">Reviews</Link>
-          <Link to="/">Profile</Link>
+          <Link to="/reviews">Reviews</Link>
+          <Link to="/profile">Profile</Link>
           <button onClick={onLogout}>Logout</button>
         </>
       )}

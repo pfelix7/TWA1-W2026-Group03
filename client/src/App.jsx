@@ -9,6 +9,8 @@ import RegisterPage from "./pages/RegisterPage.jsx";
 
 import BrowsePage from "./pages/BrowsePage.jsx";
 import ListingDetailPage from "./pages/ListingDetailPage.jsx";
+import ProfilePage from "./pages/ProfilePage.jsx";
+import ReviewsPage from "./pages/ReviewsPage.jsx";
 
 const API_BASE = "http://localhost:3000/api";
 
@@ -182,6 +184,24 @@ function App() {
           element={
             <ProtectedRoute user={user}>
               <ListingDetailPage user={user} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute user={user}>
+              <ProfilePage user={user} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/reviews"
+          element={
+            <ProtectedRoute user={user}>
+              <ReviewsPage user={user} />
             </ProtectedRoute>
           }
         />

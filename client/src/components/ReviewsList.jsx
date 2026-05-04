@@ -116,7 +116,20 @@ export default function ReviewsList({ reviews, user, onReviewDeleted }) {
                 )}
               </div>
               <p>{review.comment}</p>
-              {review.photoUrl && <img src={review.photoUrl} alt="Review" />}
+              {review.photo && (
+                <div style={{ marginTop: "12px", marginBottom: "12px" }}>
+                  <img
+                    src={review.photo}
+                    alt="Review"
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "300px",
+                      borderRadius: "4px",
+                      marginBottom: "12px",
+                    }}
+                  />
+                </div>
+              )}
               <small>{new Date(review.createdAt).toLocaleDateString()}</small>
             </>
           )}
