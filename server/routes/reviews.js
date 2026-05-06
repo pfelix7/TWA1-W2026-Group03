@@ -1,7 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const Review = require("../models/Review");
+const Listing = require("../models/Listing");
 const authMiddleware = require("../middleware/auth");
+
+// GET /api/reviews/user/:userId - Get all reviews by a user
+router.get("/user/:userId", authMiddleware, async (req, res) => {
+  try {
+    const reviews = await Review.find({ user: req.params.userId })
+      .populate("listing", "name _id")
+      .sort({ createdAt: -1 });
+    res.json(reviews);
+  } catch (error) {
+    console.error("Error fetching user reviews:", error);
+    res.status(500).json({ error: "Failed to fetch reviews" });
+  }
+});
 
 // GET /api/reviews/:listingId - Get all reviews for a listing
 router.get("/:listingId", async (req, res) => {
@@ -42,8 +56,15 @@ router.post("/", authMiddleware, async (req, res) => {
         .json({ error: "You have already reviewed this listing" });
     }
 
+    // Find the listing to get its MongoDB ID
+    const listing = await Listing.findById(listingId);
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
     const newReview = new Review({
       listingId,
+      listing: listing._id,
       user: userId,
       rating,
       comment,
@@ -51,6 +72,7 @@ router.post("/", authMiddleware, async (req, res) => {
     });
     await newReview.save();
     await newReview.populate("user", "_id firstName lastName");
+    await newReview.populate("listing", "name _id");
     res.status(201).json(newReview);
   } catch (error) {
     console.error("Error creating review:", error);

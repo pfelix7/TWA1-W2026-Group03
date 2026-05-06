@@ -44,21 +44,19 @@ export default function ReviewForm({
     try {
       const token = localStorage.getItem("token");
 
-      // Use FormData to support file upload
-      const formData = new FormData();
-      formData.append("listingId", listingId);
-      formData.append("rating", rating);
-      formData.append("comment", comment);
-      if (photo) {
-        formData.append("photo", photo);
-      }
+      const reviewData = {
+        listingId,
+        rating,
+        comment,
+      };
 
       const response = await fetch("/api/reviews", {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        body: JSON.stringify(reviewData),
       });
 
       if (!response.ok) {

@@ -53,7 +53,15 @@ export default function ReviewsPage({ user }) {
               {review.photo && (
                 <img src={review.photo} alt="Review" className="review-image" />
               )}
-              <Link to={`/listing/${review.listingId}`}>View Listing</Link>
+              {review.listing ? (
+                <Link to={`/listings/${review.listing._id}`}>
+                  View Listing: {review.listing.name}
+                </Link>
+              ) : review.listingId ? (
+                <Link to={`/listings/${review.listingId}`}>View Listing</Link>
+              ) : (
+                <p>Listing no longer available</p>
+              )}
             </div>
           ))}
         </div>
