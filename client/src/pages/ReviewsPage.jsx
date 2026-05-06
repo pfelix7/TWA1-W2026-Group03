@@ -50,8 +50,8 @@ export default function ReviewsPage({ user }) {
               <p>
                 <strong>{review.rating} stars</strong> - {review.comment}
               </p>
-              {review.photo && (
-                <img src={review.photo} alt="Review" className="review-image" />
+              {review.photoUrl && (
+                <img src={`http://localhost:3000${review.photoUrl}`} alt="Review" className="review-image" />
               )}
               {review.listing ? (
                 <Link to={`/listings/${review.listing._id}`}>

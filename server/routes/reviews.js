@@ -3,14 +3,30 @@ const router = express.Router();
 const Review = require("../models/Review");
 const Listing = require("../models/Listing");
 const authMiddleware = require("../middleware/auth");
+const upload = require("../middleware/upload");
 
 // GET /api/reviews/user/:userId - Get all reviews by a user
 router.get("/user/:userId", authMiddleware, async (req, res) => {
   try {
     const reviews = await Review.find({ user: req.params.userId })
-      .populate("listing", "name _id")
+      .populate("user", "_id firstName lastName")
       .sort({ createdAt: -1 });
-    res.json(reviews);
+    
+    // Fetch listing info for each review based on listingId
+    const reviewsWithListings = await Promise.all(
+      reviews.map(async (review) => {
+        const reviewObj = review.toObject();
+        if (review.listingId) {
+          const listing = await Listing.findById(review.listingId, "name _id");
+          if (listing) {
+            reviewObj.listing = listing;
+          }
+        }
+        return reviewObj;
+      })
+    );
+    
+    res.json(reviewsWithListings);
   } catch (error) {
     console.error("Error fetching user reviews:", error);
     res.status(500).json({ error: "Failed to fetch reviews" });
@@ -30,19 +46,30 @@ router.get("/:listingId", async (req, res) => {
   }
 });
 
-// POST /api/reviews - Create a new review
-router.post("/", authMiddleware, async (req, res) => {
+// POST /api/reviews - Create a new review with optional image
+router.post("/", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
     const { listingId, rating, comment } = req.body;
     const userId = req.user.userId;
 
     // Server-side validation
     if (!listingId || !rating || !comment) {
+      // Clean up uploaded file if validation fails
+      if (req.file) {
+        const fs = require("fs");
+        fs.unlinkSync(req.file.path);
+      }
       return res
         .status(400)
         .json({ error: "listingId, rating, and comment are required" });
     }
-    if (rating < 1 || rating > 5 || !Number.isInteger(rating)) {
+
+    if (rating < 1 || rating > 5 || !Number.isInteger(Number(rating))) {
+      // Clean up uploaded file if validation fails
+      if (req.file) {
+        const fs = require("fs");
+        fs.unlinkSync(req.file.path);
+      }
       return res
         .status(400)
         .json({ error: "Rating must be an integer between 1 and 5" });
@@ -51,6 +78,11 @@ router.post("/", authMiddleware, async (req, res) => {
     // Check if user already has a review for this listing
     const existingReview = await Review.findOne({ listingId, user: userId });
     if (existingReview) {
+      // Clean up uploaded file if review already exists
+      if (req.file) {
+        const fs = require("fs");
+        fs.unlinkSync(req.file.path);
+      }
       return res
         .status(409)
         .json({ error: "You have already reviewed this listing" });
@@ -59,22 +91,34 @@ router.post("/", authMiddleware, async (req, res) => {
     // Find the listing to get its MongoDB ID
     const listing = await Listing.findById(listingId);
     if (!listing) {
+      // Clean up uploaded file if listing not found
+      if (req.file) {
+        const fs = require("fs");
+        fs.unlinkSync(req.file.path);
+      }
       return res.status(404).json({ error: "Listing not found" });
     }
 
+    // Build photo URL if file was uploaded
+    const photoUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
     const newReview = new Review({
       listingId,
-      listing: listing._id,
       user: userId,
-      rating,
+      rating: Number(rating),
       comment,
+      photoUrl,
       source: "app",
     });
     await newReview.save();
     await newReview.populate("user", "_id firstName lastName");
-    await newReview.populate("listing", "name _id");
     res.status(201).json(newReview);
   } catch (error) {
+    // Clean up uploaded file on error
+    if (req.file) {
+      const fs = require("fs");
+      fs.unlinkSync(req.file.path);
+    }
     console.error("Error creating review:", error);
     res.status(500).json({ error: "Failed to create review" });
   }

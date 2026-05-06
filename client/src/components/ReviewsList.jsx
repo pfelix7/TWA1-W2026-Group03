@@ -116,10 +116,10 @@ export default function ReviewsList({ reviews, user, onReviewDeleted }) {
                 )}
               </div>
               <p>{review.comment}</p>
-              {review.photo && (
+              {review.photoUrl && (
                 <div style={{ marginTop: "12px", marginBottom: "12px" }}>
                   <img
-                    src={review.photo}
+                    src={`http://localhost:3000${review.photoUrl}`}
                     alt="Review"
                     style={{
                       maxWidth: "100%",

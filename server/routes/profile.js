@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const Review = require("../models/Review");
+const Listing = require("../models/Listing");
 const authMiddleware = require("../middleware/auth");
 
 // GET /api/profile - Get the authenticated user's profile and reviews
@@ -13,11 +14,33 @@ router.get("/", authMiddleware, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Fetch all reviews by this user, populated with listing data
+    // Fetch all reviews by this user
     const reviews = await Review.find({ user: req.user.userId })
-      .populate("listing", "name _id")
       .sort({ createdAt: -1 })
       .lean();
+
+    // Fetch listing info for each review based on listingId
+    const reviewsWithListings = await Promise.all(
+      reviews.map(async (review) => {
+        let listing = null;
+        if (review.listingId) {
+          listing = await Listing.findById(review.listingId, "name _id");
+        }
+        return {
+          id: review._id,
+          rating: review.rating,
+          comment: review.comment,
+          reviewDate: review.reviewDate,
+          photoUrl: review.photoUrl,
+          listing: listing
+            ? {
+                id: listing._id,
+                name: listing.name,
+              }
+            : null,
+        };
+      })
+    );
 
     res.status(200).json({
       user: {
@@ -27,18 +50,7 @@ router.get("/", authMiddleware, async (req, res) => {
         email: user.email,
         fullName: user.fullName,
       },
-      reviews: reviews.map((review) => ({
-        id: review._id,
-        rating: review.rating,
-        comment: review.comment,
-        reviewDate: review.reviewDate,
-        listing: review.listing
-          ? {
-              id: review.listing._id,
-              name: review.listing.name,
-            }
-          : null,
-      })),
+      reviews: reviewsWithListings,
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
