@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 
 import Nav from "./components/Nav.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import "./App.css";
 
 import LoginPage from "./pages/LoginPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
@@ -162,7 +163,7 @@ function App() {
           path="/"
           element={
             <ProtectedRoute user={user}>
-              <div style={{ padding: "20px" }}>
+              <div className="home-page">
                 <h1>Welcome to Airbnb Explorer</h1>
                 <p>Browse listings and share your reviews.</p>
               </div>
