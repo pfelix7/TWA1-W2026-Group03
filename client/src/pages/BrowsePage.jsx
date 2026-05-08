@@ -78,10 +78,10 @@ export default function BrowsePage() {
   };
 
   return (
-    <div>
+    <div className="browse-page">
       <h1>Browse Listings</h1>
 
-      <div>
+      <div className="filters">
         <input
           type="text"
           name="city"
@@ -89,20 +89,26 @@ export default function BrowsePage() {
           value={filters.city}
           onChange={handleFilterChange}
         />
-        <input
-          type="number"
-          name="minPrice"
-          placeholder="Min Price"
-          value={filters.minPrice}
-          onChange={handleFilterChange}
-        />
-        <input
-          type="number"
-          name="maxPrice"
-          placeholder="Max Price"
-          value={filters.maxPrice}
-          onChange={handleFilterChange}
-        />
+        <div className="price-input-wrapper">
+          <span>$</span>
+          <input
+            type="number"
+            name="minPrice"
+            placeholder="Min"
+            value={filters.minPrice}
+            onChange={handleFilterChange}
+          />
+        </div>
+        <div className="price-input-wrapper">
+          <span>$</span>
+          <input
+            type="number"
+            name="maxPrice"
+            placeholder="Max"
+            value={filters.maxPrice}
+            onChange={handleFilterChange}
+          />
+        </div>
         <select name="roomType" value={filters.roomType} onChange={handleFilterChange}>
           <option value="">All Types</option>
           <option value="Entire home/apt">Entire home</option>
@@ -115,7 +121,7 @@ export default function BrowsePage() {
       {error && <p>{error}</p>}
       {!loading && listings.length === 0 && <p>No listings found</p>}
 
-      <div>
+      <div className="listings-grid">
         {listings.map((listing) => (
           <ListingCard
             key={listing._id}

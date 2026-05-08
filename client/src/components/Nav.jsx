@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function Nav({ user, onLogout }) {
   return (
-    <nav style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+    <nav className="nav-bar">
       {!user ? (
         <>
           <Link to="/login">Login</Link>

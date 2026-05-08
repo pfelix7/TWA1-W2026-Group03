@@ -11,8 +11,8 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --heading: system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
@@ -91,8 +91,17 @@ h2 {
     font-size: 20px;
   }
 }
+
+h3 {
+  font-size: 20px;
+  margin: 16px 0 12px;
+  color: var(--text-h);
+  font-weight: 600;
+}
+
 p {
   margin: 0;
+  line-height: 1.6;
 }
 
 code,
@@ -108,4 +117,351 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+/* Cards & Containers */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px auto;
+  max-width: 600px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+.container {
+  padding: 20px;
+}
+
+/* Form Elements */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-h);
+  text-align: left;
+  font-size: 15px;
+}
+
+label span {
+  font-size: 0.9em;
+  color: var(--text);
+  font-weight: 400;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+textarea,
+select {
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 16px;
+  background: var(--bg);
+  color: var(--text-h);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+input[type="file"]:hover,
+textarea:hover,
+select:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="file"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-bg), 0 0 0 8px var(--accent-border);
+  background: var(--bg);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: var(--sans);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: var(--sans);
+}
+
+/* Buttons */
+button {
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+button:hover:not(:disabled)::before {
+  width: 300px;
+  height: 300px;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(170, 59, 255, 0.3);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--border);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* Links */
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  :root {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 36px;
+    margin: 24px 0;
+  }
+
+  h2 {
+    font-size: 20px;
+    margin: 16px 0;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin: 12px 0 8px;
+  }
+
+  body {
+    padding: 12px;
+  }
+
+  .container {
+    padding: 12px;
+  }
+
+  form {
+    gap: 12px;
+  }
+
+  label {
+    gap: 6px;
+    font-size: 14px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="file"],
+  textarea,
+  select {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .card {
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  .nav-bar {
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .nav-bar a {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .review-form {
+    padding: 16px;
+  }
+
+  .photo-preview-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .photo-preview {
+    max-width: 150px;
+    max-height: 150px;
+  }
+
+  .review-card {
+    padding: 16px;
+  }
+
+  .review-image {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 28px;
+    margin: 16px 0;
+  }
+
+  h2 {
+    font-size: 18px;
+    margin: 12px 0;
+  }
+
+  h3 {
+    font-size: 16px;
+    margin: 10px 0 6px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+
+  body {
+    padding: 8px;
+  }
+
+  .container {
+    padding: 8px;
+  }
+
+  form {
+    gap: 10px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="file"],
+  textarea,
+  select {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  button {
+    padding: 8px 12px;
+    font-size: 12px;
+    width: 100%;
+  }
+
+  .card {
+    padding: 12px;
+    border-radius: 6px;
+  }
+
+  .nav-bar {
+    gap: 6px;
+    flex-direction: column;
+  }
+
+  .nav-bar a {
+    padding: 6px 10px;
+    font-size: 12px;
+    width: 100%;
+  }
+
+  .nav-bar button {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .review-form {
+    padding: 12px;
+  }
+
+  .review-card {
+    padding: 12px;
+  }
+
+  .photo-preview {
+    max-width: 120px;
+    max-height: 120px;
+  }
+
+  .review-image {
+    max-height: 150px;
+  }
 }

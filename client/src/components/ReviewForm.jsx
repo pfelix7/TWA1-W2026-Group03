@@ -88,21 +88,14 @@ export default function ReviewForm({
   // If user already reviewed, show message
   if (userReview) {
     return (
-      <div
-        style={{
-          border: "1px solid #ccc",
-          padding: "15px",
-          marginTop: "20px",
-          backgroundColor: "#f0f0f0",
-        }}
-      >
+      <div className="review-already-posted">
         <p>
           <strong>You've already reviewed this listing</strong>
         </p>
         <p>
           Your review: {userReview.rating} stars - {userReview.comment}
         </p>
-        <p style={{ fontSize: "0.9em", color: "#666" }}>
+        <p className="review-help-text">
           Edit or delete your review from the reviews list above
         </p>
       </div>
@@ -110,10 +103,7 @@ export default function ReviewForm({
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ border: "1px solid #ddd", padding: "15px", marginTop: "20px" }}
-    >
+    <form onSubmit={handleSubmit} className="review-form">
       <h3>Leave a Review</h3>
 
       <label>
@@ -130,48 +120,36 @@ export default function ReviewForm({
         </select>
       </label>
 
-      <textarea
-        placeholder="Share your experience..."
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        required
-      />
+      <label>
+        Comment:
+        <textarea
+          placeholder="Share your experience..."
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          required
+        />
+      </label>
 
-      <div style={{ marginTop: "12px" }}>
-        <label>
-          Photo (optional):
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoChange}
-            style={{ marginLeft: "8px" }}
-          />
-        </label>
-      </div>
+      <label>
+        Photo (optional):
+        <input type="file" accept="image/*" onChange={handlePhotoChange} />
+      </label>
 
       {photoPreview && (
-        <div style={{ marginTop: "12px" }}>
-          <img
-            src={photoPreview}
-            alt="Preview"
-            style={{
-              maxWidth: "200px",
-              maxHeight: "200px",
-              borderRadius: "4px",
-            }}
-          />
+        <div className="photo-preview-container">
+          <img src={photoPreview} alt="Preview" className="photo-preview" />
           <button
             type="button"
             onClick={handleRemovePhoto}
-            style={{ marginLeft: "12px", padding: "4px 12px" }}
+            className="remove-photo-btn"
           >
             Remove Photo
           </button>
         </div>
       )}
 
-      {error && <p style={{ color: "crimson", marginTop: "12px" }}>{error}</p>}
-      <button type="submit" disabled={loading} style={{ marginTop: "12px" }}>
+      {error && <p className="error">{error}</p>}
+      <button type="submit" disabled={loading}>
         {loading ? "Submitting..." : "Submit Review"}
       </button>
     </form>
