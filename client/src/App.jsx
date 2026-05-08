@@ -123,6 +123,13 @@ function App() {
     navigate("/login");
   };
 
+  const handleUserUpdate = (updatedFields) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      ...updatedFields,
+    }));
+  };
+
   if (isCheckingSession) {
     return (
       <div className="container">
@@ -192,7 +199,11 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute user={user}>
-              <ProfilePage user={user} />
+              <ProfilePage
+                user={user}
+                token={token}
+                onUserUpdate={handleUserUpdate}
+              />
             </ProtectedRoute>
           }
         />

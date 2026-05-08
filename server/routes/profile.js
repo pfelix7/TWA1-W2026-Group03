@@ -39,7 +39,7 @@ router.get("/", authMiddleware, async (req, res) => {
               }
             : null,
         };
-      })
+      }),
     );
 
     res.status(200).json({
@@ -76,7 +76,7 @@ router.put("/", authMiddleware, async (req, res) => {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!user) {
